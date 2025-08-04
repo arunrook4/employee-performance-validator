@@ -1,0 +1,927 @@
+{
+	"info": {
+		"_postman_id": "employee-performance-validator-api",
+		"name": "Employee Performance Validator API",
+		"description": "Complete API collection for the Employee Performance Validator application. Includes authentication, employee management, performance evaluations, goals, and competencies endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "employee-performance-validator"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin@company.com\",\n  \"email\": \"admin@company.com\",\n  \"password\": \"admin123\",\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user account"
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('authToken', response.token);",
+									"    pm.environment.set('userId', response.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login and get authentication token"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						},
+						"description": "Get current user profile information"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for user registration, login, and profile management"
+		},
+		{
+			"name": "Employees",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees?search=john&department=Engineering&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"employees"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "john",
+									"description": "Search term for employee name, email, or ID"
+								},
+								{
+									"key": "department",
+									"value": "Engineering",
+									"description": "Filter by department"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								}
+							]
+						},
+						"description": "Get all employees with optional search and filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"employeeId\": \"EMP001\",\n  \"email\": \"john.doe@company.com\",\n  \"phone\": \"+1234567890\",\n  \"department\": \"Engineering\",\n  \"position\": \"Software Engineer\",\n  \"hireDate\": \"2023-01-15\",\n  \"manager\": \"{{managerId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/employees",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"employees"
+							]
+						},
+						"description": "Create a new employee record"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Get employee details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"position\": \"Senior Software Engineer\",\n  \"department\": \"Engineering\",\n  \"phone\": \"+1234567891\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Update employee information"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Employee",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/employees/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Soft delete employee (marks as inactive)"
+					},
+					"response": []
+				}
+			],
+			"description": "Employee management endpoints for CRUD operations"
+		},
+		{
+			"name": "Performance Evaluations",
+			"item": [
+				{
+					"name": "Get All Evaluations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/performance?search=john&status=submitted&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"performance"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "john",
+									"description": "Search by employee or evaluator name"
+								},
+								{
+									"key": "status",
+									"value": "submitted",
+									"description": "Filter by status: draft, submitted, approved, rejected"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								}
+							]
+						},
+						"description": "Get all performance evaluations with optional search and filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Evaluation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employee\": \"{{employeeId}}\",\n  \"evaluator\": \"{{evaluatorId}}\",\n  \"evaluationPeriod\": {\n    \"startDate\": \"2024-01-01\",\n    \"endDate\": \"2024-03-31\"\n  },\n  \"overallRating\": 4,\n  \"status\": \"draft\",\n  \"comments\": \"Excellent performance during Q1 2024. Shows strong technical skills and good communication.\",\n  \"evaluationDate\": \"2024-03-31\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/performance",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"performance"
+							]
+						},
+						"description": "Create a new performance evaluation"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Evaluation by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/performance/{{evaluationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"performance",
+								"{{evaluationId}}"
+							]
+						},
+						"description": "Get performance evaluation details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Evaluation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"overallRating\": 5,\n  \"status\": \"submitted\",\n  \"comments\": \"Updated comments with additional feedback.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/performance/{{evaluationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"performance",
+								"{{evaluationId}}"
+							]
+						},
+						"description": "Update performance evaluation"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Evaluation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/performance/{{evaluationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"performance",
+								"{{evaluationId}}"
+							]
+						},
+						"description": "Soft delete performance evaluation"
+					},
+					"response": []
+				}
+			],
+			"description": "Performance evaluation endpoints for assessment management"
+		},
+		{
+			"name": "Goals",
+			"item": [
+				{
+					"name": "Get All Goals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/goals?search=project&targetType=quarterly&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"goals"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "project",
+									"description": "Search by goal title"
+								},
+								{
+									"key": "targetType",
+									"value": "quarterly",
+									"description": "Filter by target type: quarterly, annual"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								}
+							]
+						},
+						"description": "Get all goals with optional search and filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Goal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Complete Project Alpha\",\n  \"targetType\": \"quarterly\",\n  \"dueDate\": \"2024-06-30\",\n  \"progress\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/goals",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"goals"
+							]
+						},
+						"description": "Create a new goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goal by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/goals/{{goalId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"goals",
+								"{{goalId}}"
+							]
+						},
+						"description": "Get goal details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Project Alpha Goal\",\n  \"dueDate\": \"2024-07-15\",\n  \"progress\": 50\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/goals/{{goalId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"goals",
+								"{{goalId}}"
+							]
+						},
+						"description": "Update goal information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal Progress",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"progress\": 75\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/goals/{{goalId}}/progress",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"goals",
+								"{{goalId}}",
+								"progress"
+							]
+						},
+						"description": "Update only the progress of a goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goals by Employee",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/goals/employee/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"goals",
+								"employee",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Get all goals assigned to a specific employee"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/goals/{{goalId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"goals",
+								"{{goalId}}"
+							]
+						},
+						"description": "Soft delete goal"
+					},
+					"response": []
+				}
+			],
+			"description": "Goal management endpoints for CRUD operations and progress tracking"
+		},
+		{
+			"name": "Competencies",
+			"item": [
+				{
+					"name": "Get All Competencies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/competencies?search=javascript&category=Technical&status=proficient&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"competencies"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "javascript",
+									"description": "Search by skill name"
+								},
+								{
+									"key": "category",
+									"value": "Technical",
+									"description": "Filter by skill category"
+								},
+								{
+									"key": "status",
+									"value": "proficient",
+									"description": "Filter by assessment status"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								}
+							]
+						},
+						"description": "Get all competencies with optional search and filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Competency",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"employee\": \"{{employeeId}}\",\n  \"skillName\": \"JavaScript\",\n  \"category\": \"Technical\",\n  \"currentLevel\": 3,\n  \"targetLevel\": 4,\n  \"assessmentDate\": \"2024-03-31\",\n  \"nextReviewDate\": \"2024-06-30\",\n  \"description\": \"JavaScript programming skills including ES6+ features\",\n  \"evidence\": \"Successfully completed multiple JavaScript projects\",\n  \"developmentPlan\": \"Focus on advanced JavaScript patterns and frameworks\",\n  \"status\": \"developing\",\n  \"assessedBy\": \"{{assessorId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/competencies",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"competencies"
+							]
+						},
+						"description": "Create a new competency assessment"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Competency by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/competencies/{{competencyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"competencies",
+								"{{competencyId}}"
+							]
+						},
+						"description": "Get competency assessment details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Competency",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentLevel\": 4,\n  \"status\": \"proficient\",\n  \"evidence\": \"Updated evidence of advanced JavaScript skills\",\n  \"nextReviewDate\": \"2024-09-30\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/competencies/{{competencyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"competencies",
+								"{{competencyId}}"
+							]
+						},
+						"description": "Update competency assessment"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee Competencies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/competencies/employee/{{employeeId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"competencies",
+								"employee",
+								"{{employeeId}}"
+							]
+						},
+						"description": "Get all competencies for a specific employee"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Competency Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/competencies/stats/overview",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"competencies",
+								"stats",
+								"overview"
+							]
+						},
+						"description": "Get competency statistics and overview data"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Competency",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/competencies/{{competencyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"competencies",
+								"{{competencyId}}"
+							]
+						},
+						"description": "Soft delete competency assessment"
+					},
+					"response": []
+				}
+			],
+			"description": "Competency and skill assessment endpoints for skill evaluation and development tracking"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	]
+} 
